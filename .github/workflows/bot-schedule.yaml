@@ -14,17 +14,14 @@ jobs:
         if: runner.os == 'macOS'
         run: |
            brew list --versions > dependencies.txt
-           echo "::set-output name=dependencies::$(cat dependencies.txt)"
-           echo "::set-env name=dependencies::$(cat dependencies.txt)"
-           echo "::set-output name=dependencies::$(cat dependencies.txt)"
-           echo "::set-output name=dependencies::$(cat dependencies.txt)"
+           echo "dependencies=$(cat dependencies.txt)" >> $GITHUB_ENV
         id: save-dependencies
         
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
           path: /usr/local/Cellar
-          key: ${{ runner.os }}-gdal-${{ hashFiles('dependencies.txt') }}
+          key: ${{ runner.os }}-gdal-${{ env.dependencies }}
           restore-keys: |
             ${{ runner.os }}-gdal-
         
