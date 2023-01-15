@@ -10,27 +10,38 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - name: Install gdal
+      - name: Save dependencies to cache
         if: runner.os == 'macOS'
         run: |
-          brew install gdal
-          brew link --overwrite gdal
-      
-      - name: Cache gdal
+           brew list --versions > dependencies.txt
+           echo "::set-output name=dependencies::$(cat dependencies.txt)"
+           echo "::set-env name=dependencies::$(cat dependencies.txt)"
+           echo "::set-output name=dependencies::$(cat dependencies.txt)"
+           echo "::set-output name=dependencies::$(cat dependencies.txt)"
+        id: save-dependencies
+        
+      - name: Cache dependencies
         uses: actions/cache@v2
         with:
-          path: /usr/local/opt/gdal
-          key: gdal-${{ hashFiles('**/gdal*') }}
-      
-      - name: Checkout
-        uses: actions/checkout@v2
+          path: /usr/local/Cellar
+          key: ${{ runner.os }}-gdal-${{ hashFiles('dependencies.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-gdal-
         
-      - name: Setup R
+      - name: Install macOS system dependencies
+        if: runner.os == 'macOS'
+        run: |
+           brew install gdal
+           
+      - uses: actions/checkout@v2
+        
+      - name: Install R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.1.1'
-      - name: Setup R dependencies
+        
+      - name: Install R Dependencies
         uses: r-lib/actions/setup-renv@v2
-      
+            
       - name: Run bot
         run: Rscript R/bot_script.R
