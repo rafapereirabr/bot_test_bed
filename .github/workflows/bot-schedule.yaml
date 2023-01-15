@@ -14,12 +14,13 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install gdal
+          brew link --overwrite gdal
       
       - name: Cache gdal
         uses: actions/cache@v2
         with:
-          path: /usr/local/Cellar/gdal
-          key: gdal-{{ checksum "gdal.tar.gz" }}
+          path: /usr/local/opt/gdal
+          key: gdal-${{ hashFiles('**/gdal*') }}
       
       - name: Checkout
         uses: actions/checkout@v2
