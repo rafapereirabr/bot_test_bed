@@ -10,17 +10,18 @@ jobs:
     runs-on: macOS-latest
 
     steps:
+      - name: Cache gdal
+        uses: actions/cache@v2
+        with:
+          path: $(brew --prefix gdal)
+          key: gdal-${{ hashFiles('**/gdal*') }}
+          restore-keys: gdal-
+      
       - name: Install gdal
         if: runner.os == 'macOS'
         run: |
           brew install gdal
           brew link --overwrite gdal
-      
-      - name: Cache gdal
-        uses: actions/cache@v2
-        with:
-          path: /usr/local/opt/gdal
-          key: gdal-${{ hashFiles('**/gdal*') }}
       
       - name: Checkout
         uses: actions/checkout@v2
