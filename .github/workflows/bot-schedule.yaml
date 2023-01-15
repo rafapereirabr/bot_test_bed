@@ -10,15 +10,20 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - name: Cache macOS and system dependencies
+      - name: Install gdal
         if: runner.os == 'macOS'
         run: |
           brew install gdal
-          echo "::set-env name=GDAL_CACHE::$(brew --cache gdal)"
-          echo "::set-env name=GDAL_CELLAR::$(brew --cellar gdal)"
-          echo "::set-env name=GDAL_PREFIX::$(brew --prefix gdal)"
+      
+      - name: Cache gdal
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/Cellar/gdal
+          key: gdal-{{ checksum "gdal.tar.gz" }}
+      
       - name: Checkout
         uses: actions/checkout@v2
+        
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -38,10 +43,6 @@ jobs:
             fi
       - name: Setup R dependencies
         uses: r-lib/actions/setup-renv@v2
-        env:
-          GDAL_CACHE: ${{ env.GDAL_CACHE }}
-          GDAL_CELLAR: ${{ env.GDAL_CELLAR }}
-          GDAL_PREFIX: ${{ env.GDAL_PREFIX }}
+      
       - name: Run bot
         run: Rscript R/bot_script.R
-
