@@ -10,25 +10,25 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - name: Restore gdal cache
+      - name: Checkout
+        id: id_cache_gdal
+        uses: actions/checkout@v2
+        
+      - name: Cache gdal
         uses: actions/cache@v2
+        env:
+          cache-name: cache-gdal
         with:
-          path: $(brew --prefix gdal@3.3.3)
-          key: gdal-v3.3.3-${{ hashFiles('**/gdal*') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.chache-name }}-${{ hashFiles('**/gdal*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.chache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Install gdal
-        if: runner.os == 'macOS'
-        run: |
-          brew install gdal
-
-      - name: Save gdal cache
-        uses: actions/cache@v2
-        with:
-          path: $(brew --prefix gdal@3.3.3)
-          key: gdal-v3.3.3-${{ hashFiles('**/gdal*') }}
-
-      - name: Checkout
-        uses: actions/checkout@v2
+        if: steps.id_cache_gdal.outputs.cache-hit != 'true'
+        run: brew install gdal
         
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
