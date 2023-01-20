@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Cache gdal
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $(brew --prefix gdal)
           key: gdal-${{ hashFiles('**/gdal*') }}
