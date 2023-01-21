@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout
-        id: id_cache_gdal
         uses: actions/checkout@v2
         
       - name: Cache gdal
+        id: id_cache_gdal
         uses: actions/cache@v3
         env:
           cache-name: cache-gdal
