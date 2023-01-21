@@ -29,6 +29,8 @@ jobs:
       - name: Install gdal
         if: steps.id_cache_gdal.outputs.cache-hit != 'true'
         run: |
+          brew install geos
+          brew install proj
           brew install gdal
 
       - name: Setup R
